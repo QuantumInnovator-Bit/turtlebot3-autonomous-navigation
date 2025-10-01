@@ -256,5 +256,5 @@ For questions or support, please open an issue on the GitHub repository.
 
 ---
 
-**Maintainer**: Robotics Developer  
-**Email**: robotics@example.com
+**Maintainer**: Satyam Raj - An Artificial intelligence developer  
+**Email**: satyamraj.quantumbit@zohomail.in
