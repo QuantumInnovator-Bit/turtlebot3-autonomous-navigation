@@ -1,0 +1,225 @@
+================================================================================
+TURTLEBOT3 AUTONOMOUS NAVIGATION - ROS2 HUMBLE PROJECT
+================================================================================
+
+This project provides a complete ROS2 Humble autonomous navigation system
+for TurtleBot3 with Gazebo simulation and RViz2 visualization.
+
+================================================================================
+PREREQUISITES
+================================================================================
+
+1. Ubuntu 22.04 (WSL or native)
+2. ROS2 Humble installed
+3. TurtleBot3 packages installed
+4. Gazebo and RViz2 installed
+
+================================================================================
+INSTALLATION STEPS (On Ubuntu 22.04 WSL)
+================================================================================
+
+1. Install ROS2 Humble:
+   ```bash
+   sudo apt update
+   sudo apt install software-properties-common
+   sudo add-apt-repository universe
+   sudo apt update && sudo apt install curl -y
+   sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+   sudo apt update
+   sudo apt install ros-humble-desktop
+   ```
+
+2. Install TurtleBot3 packages:
+   ```bash
+   sudo apt install ros-humble-turtlebot3*
+   sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
+   ```
+
+3. Set TurtleBot3 model:
+   ```bash
+   echo "export TURTLEBOT3_MODEL=burger" >> ~/.bashrc
+   source ~/.bashrc
+   ```
+
+4. Install Gazebo:
+   ```bash
+   sudo apt install ros-humble-gazebo-ros-pkgs
+   ```
+
+================================================================================
+BUILD INSTRUCTIONS
+================================================================================
+
+1. Create a ROS2 workspace:
+   ```bash
+   mkdir -p ~/ros2_ws/src
+   cd ~/ros2_ws/src
+   ```
+
+2. Copy this project to the workspace:
+   ```bash
+   cp -r /path/to/turtlebot3_autonomous_nav ~/ros2_ws/src/
+   ```
+
+3. Build the workspace:
+   ```bash
+   cd ~/ros2_ws
+   source /opt/ros/humble/setup.bash
+   colcon build --symlink-install
+   ```
+
+4. Source the workspace:
+   ```bash
+   source ~/ros2_ws/install/setup.bash
+   ```
+
+================================================================================
+RUNNING THE SIMULATION
+================================================================================
+
+OPTION 1: Simple Obstacle Avoidance (No Nav2, Reactive Navigation)
+-------------------------------------------------------------------
+1. Terminal 1 - Launch Gazebo:
+   ```bash
+   source ~/ros2_ws/install/setup.bash
+   export TURTLEBOT3_MODEL=burger
+   ros2 launch turtlebot3_autonomous_nav gazebo_sim.launch.py
+   ```
+
+2. Terminal 2 - Launch simple obstacle avoidance:
+   ```bash
+   source ~/ros2_ws/install/setup.bash
+   export TURTLEBOT3_MODEL=burger
+   ros2 launch turtlebot3_autonomous_nav obstacle_avoidance_simple.launch.py
+   ```
+
+OPTION 2: Advanced Navigation with Nav2 and SLAM
+-------------------------------------------------------------------
+1. Terminal 1 - Launch Gazebo:
+   ```bash
+   source ~/ros2_ws/install/setup.bash
+   export TURTLEBOT3_MODEL=burger
+   ros2 launch turtlebot3_autonomous_nav gazebo_sim.launch.py
+   ```
+
+2. Terminal 2 - Launch Nav2 with SLAM:
+   ```bash
+   source ~/ros2_ws/install/setup.bash
+   export TURTLEBOT3_MODEL=burger
+   ros2 launch turtlebot3_autonomous_nav navigation.launch.py
+   ```
+
+   Note: This uses SLAM mode to build a map automatically and enables
+   goal-based navigation with Nav2 stack.
+
+OPTION 3: Complete System (Gazebo + Nav2)
+-------------------------------------------------------------------
+   ```bash
+   source ~/ros2_ws/install/setup.bash
+   export TURTLEBOT3_MODEL=burger
+   ros2 launch turtlebot3_autonomous_nav complete_system.launch.py
+   ```
+
+================================================================================
+TESTING NODES INDIVIDUALLY
+================================================================================
+
+1. Test velocity publisher:
+   ```bash
+   ros2 run turtlebot3_autonomous_nav velocity_publisher
+   ```
+
+2. Test sensor subscriber:
+   ```bash
+   ros2 run turtlebot3_autonomous_nav sensor_subscriber
+   ```
+
+3. Test obstacle avoidance:
+   ```bash
+   ros2 run turtlebot3_autonomous_nav obstacle_avoidance
+   ```
+
+================================================================================
+PROJECT STRUCTURE
+================================================================================
+
+turtlebot3_autonomous_nav/
+├── config/
+│   ├── nav2_params.yaml          # Navigation2 parameters
+│   └── navigation.rviz           # RViz2 configuration
+├── launch/
+│   ├── gazebo_sim.launch.py           # Gazebo simulation launch
+│   ├── obstacle_avoidance_simple.launch.py  # Simple reactive navigation
+│   ├── navigation.launch.py           # Nav2 with SLAM navigation
+│   └── complete_system.launch.py      # Complete system launch
+├── turtlebot3_autonomous_nav/
+│   ├── __init__.py
+│   ├── velocity_publisher.py     # Velocity command publisher
+│   ├── sensor_subscriber.py      # Sensor data subscriber
+│   └── obstacle_avoidance.py     # Obstacle avoidance logic
+├── package.xml                    # Package metadata
+├── setup.py                       # Python package setup
+└── resource/                      # Package resources
+
+================================================================================
+NODES DESCRIPTION
+================================================================================
+
+1. velocity_publisher:
+   - Publishes velocity commands to /cmd_vel topic
+   - Parameters: linear_velocity, angular_velocity
+
+2. sensor_subscriber:
+   - Subscribes to /odom (odometry) and /scan (LiDAR) topics
+   - Processes and logs robot position and obstacle detection
+
+3. obstacle_avoidance:
+   - Implements reactive obstacle avoidance
+   - Uses laser scan data to detect obstacles
+   - Publishes velocity commands to avoid collisions
+
+================================================================================
+USAGE TIPS
+================================================================================
+
+1. Set initial pose in RViz2:
+   - Use "2D Pose Estimate" tool in RViz2
+   - Click and drag to set robot's initial position
+
+2. Set navigation goal:
+   - Use "2D Goal Pose" tool in RViz2
+   - Click and drag to set target position
+
+3. Monitor topics:
+   ```bash
+   ros2 topic list
+   ros2 topic echo /cmd_vel
+   ros2 topic echo /scan
+   ros2 topic echo /odom
+   ```
+
+4. View node graph:
+   ```bash
+   rqt_graph
+   ```
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+1. If Gazebo doesn't open:
+   - Check DISPLAY variable: `echo $DISPLAY`
+   - Install VcXsrv or X410 for WSL
+   - Set DISPLAY: `export DISPLAY=:0`
+
+2. If robot doesn't move:
+   - Check if obstacle_avoidance node is running
+   - Verify /cmd_vel topic: `ros2 topic echo /cmd_vel`
+
+3. If navigation doesn't work:
+   - Ensure map is loaded in RViz2
+   - Set initial pose using "2D Pose Estimate"
+   - Check Nav2 logs for errors
+
+================================================================================
