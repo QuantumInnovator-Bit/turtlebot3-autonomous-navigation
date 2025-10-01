@@ -30,7 +30,8 @@ def generate_launch_description():
             'use_sim_time': use_sim_time,
             'params_file': nav2_params_file,
             'slam': 'True',
-            'map': ''
+            'map': '',
+            'use_robot_state_pub': 'False'
         }.items()
     )
     
