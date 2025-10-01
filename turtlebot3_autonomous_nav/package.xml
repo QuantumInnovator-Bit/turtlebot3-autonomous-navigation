@@ -4,7 +4,7 @@
   <name>turtlebot3_autonomous_nav</name>
   <version>1.0.0</version>
   <description>Autonomous navigation package for TurtleBot3 using ROS2 Humble</description>
-  <maintainer email="user@todo.todo">User</maintainer>
+  <maintainer email="robotics@example.com">Robotics Developer</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_python</buildtool_depend>
